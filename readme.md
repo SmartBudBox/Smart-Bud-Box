@@ -6,10 +6,8 @@ Read the Manuals at /instrcutions/ for build the box and set up the Interface. W
 
 
 ## Todo
-- complete the "Planer" to make plans like watering if soil under 360
 - languages files for multilang
-- write a growbook and put it to interface
-- put the instrcutions for building and install to project as .pdf
+- ((write a growbook)) and put it to interface
 - Addons like: libra, temp/humi for othside
 
 ## Wanna help?
