@@ -8,7 +8,7 @@ switch($_GET["action"])
 	   
     case 'read_data':
         $return = $Ajax->read_data();
-        echo json_encode($return);
+        print(json_encode($return));
         break;
         
     case 'update_data' :
@@ -20,9 +20,30 @@ switch($_GET["action"])
      
     case 'insert_plan':
         $plan = json_decode($_GET["data"], true);
-        $Ajax->insert("plans", array("box" => $Ajax->box_id, "job" => $plan["job"], "plan_condition" => $plan["condition"], "plan_interval" => $plan["interval"]));
+        $Ajax->insert("plans", array("box" => $Ajax->box_id, "name" => $plan["name"], "job" => $plan["job"], "plan_condition" => $plan["condition"], "plan_interval" => $plan["interval"]));
         $Ajax->create_message_log("Plan created");
         break;
+		
+	case 'delete_plan':
+		$Ajax->delete("plans", array("id" => $_GET["id"]));
+		$Ajax->create_message_log("Plan deleted");
+		break;
+		
+	case 'reset_exec_plan':
+		$Ajax->update("plans", array("last_execution" => "0000-00-00 00:00:00"), array("id" => $_GET["id"]));
+		$Ajax->create_message_log("Plan execute reset");
+		break;
+		
+	case 'toggle_plan':
+		$status = $Ajax->get("plans", array("id" => $_GET["id"]));
+		if ($status["active"] == "1") {
+			$Ajax->update("plans", array("active" => "0"),array("id" => $_GET["id"]));
+			print("0");
+		} else {
+			$Ajax->update("plans", array("active" => "1"),array("id" => $_GET["id"]));
+			print("1");
+		}
+		break;
         
     case 'update_notes' :
         $note = $_POST["notes"];

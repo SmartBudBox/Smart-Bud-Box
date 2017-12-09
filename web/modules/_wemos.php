@@ -6,7 +6,7 @@ switch ($_GET["action"]) {
         break;
         
     case 'read_transmission_json':
-        print (json_encode($Wemos->read_transmisson()));
+        print (json_encode($Wemos->read_uc_transmisson()));
         break;
         
     case 'sensordata':

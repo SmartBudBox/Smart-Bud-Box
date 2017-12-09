@@ -12,7 +12,10 @@ define("MYSQL_PORT", ""); // standard 3306
 
 define("URL", "");  // url to your siteexample http://myname.com/folder
 define("PASSWORD", "");
-define("MAIL_ADRESS", "");
+define("MAIL_ADRESS", "");  // for notifications at your plans
+
+define("LANGUAGE", "de"); // watch /languages/ folder  for languages
 
 define("VERSION", "1.0");
+
 ?>

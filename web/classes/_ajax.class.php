@@ -58,6 +58,8 @@ class Ajax extends Core {
         else {
             $return["error"] = "0";
         }
+		
+		
 
         // Infolog
         $this->set_order(array("id" => "DESC"));
@@ -72,12 +74,11 @@ class Ajax extends Core {
         }
         
         if (is_array($infoarray)) {
-        foreach($infoarray as $data)
-        {
-            $return["info_log"].='<p class="bg-'.$data["type"].'"><strong>'.$data["time"].'</strong>: '.$data["message"].'</p>';
-        } 
+	        foreach($infoarray as $data)
+	        {
+	            $return["info_log"].='<p class="bg-'.$data["type"].'"><strong>'.$data["time"].'</strong>: '.$data["message"].'</p>';
+	        } 
         }
-
 
         return $return;
     }
@@ -142,9 +143,9 @@ class Ajax extends Core {
     function disable_error() {
         $this->set_order(array("id" => "ASC"));
         $this->set_limit(array("0" => "1"));
-        $error = $this->get("info_log", array("error" => "1"));
+        $error = $this->get("messages", array("error" => "1"));
 
-        $delete = $this->update("info_log", array("error" => "0"), array("id" => $error["id"]));
+        $delete = $this->update("messages", array("error" => "0"), array("id" => $error["id"]));
 
         if ($delete)
         {

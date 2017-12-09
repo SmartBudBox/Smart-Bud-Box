@@ -114,6 +114,27 @@ class Main extends Core {
         
         return;
     } 
+	
+	/**
+	 * get plans for the box and return as multi array
+	 * 
+	 * @return array Multidimensional Array
+	 */
+	function get_plans() {
+		$plans = $this->get("plans", array("box" => $this->box["id"]));
+		//
+		if (!$plans) {
+			return array();	
+		}
+		elseif (isset($plans["id"])) {
+			$return = array();
+			$return[0] = $plans;
+			unset($plans);
+			return $return;
+		} else {
+			return $plans;
+		}
+	}
 
     function get_last_mold() {
         $this->set_order(array("id" => "DESC"));

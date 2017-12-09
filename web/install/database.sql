@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS `boxes` (
   `pump_runtime` int(5) NOT NULL DEFAULT '1000',
   `pump_repeats` int(3) NOT NULL DEFAULT '1',
   `pump_repeats_delay` int(4) NOT NULL DEFAULT '200',
+  `soil_is_wet` int(3) NOT NULL DEFAULT '480',
   `fans_change_interval` int(4) NOT NULL DEFAULT '180',
   `fans_step` int(4) NOT NULL DEFAULT '100',
   `fans_speed_max` int(11) NOT NULL DEFAULT '1024',
@@ -71,7 +72,6 @@ CREATE TABLE IF NOT EXISTS `logs_pump` (
 `id` int(11) NOT NULL,
   `box` varchar(80) NOT NULL,
   `soil` float NOT NULL,
-  `type` varchar(10) NOT NULL,
   `runtime` int(11) NOT NULL,
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -91,16 +91,19 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `message` varchar(255) NOT NULL,
   `type` varchar(20) NOT NULL,
   `error` int(1) NOT NULL,
+  `error_type` varchar(50) NOT NULL,
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `plans` (
 `id` int(11) NOT NULL,
   `box` int(11) NOT NULL,
+  `name` varchar(80) NOT NULL,
   `job` varchar(30) NOT NULL,
   `plan_condition` varchar(250) NOT NULL,
   `plan_interval` int(11) NOT NULL,
-  `last_execution` datetime NOT NULL
+  `active` int(1) NOT NULL DEFAULT '0',
+  `last_execution` datetime DEFAULT '0000-00-00 00:00:00'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `_transmissions` (

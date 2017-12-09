@@ -9,6 +9,7 @@ class Wemos extends Core
     {
         parent::__construct();
         $this->box_login($box_name);
+		$this->execute_plans();
         
     }
     
@@ -218,7 +219,7 @@ class Wemos extends Core
      *
      * @return boolean
      */
-    function read_transmisson() {
+    function read_uc_transmisson() {
        // first do the main function
        $this->main();
         
@@ -240,7 +241,9 @@ class Wemos extends Core
                     break;
     
                 case "watering": 
-                    $this->insert("logs_pump", array("soil" => "1", "type" => "normal", "runtime" => $command["value"] , "box" => $this->box["id"])); 
+					$this->set_limit(array("0" => "1"));
+					$log = $this->get("logs_sensors", array("box" => $this->box["id"]));
+                    $this->insert("logs_pump", array("soil" => $log["soil"], "runtime" => $command["value"] , "box" => $this->box["id"])); 
                     break;
             }
                
@@ -292,9 +295,17 @@ class Wemos extends Core
      * @return boolean
      */
     function create_sensor_data($temp, $humi, $soil) {
+    	
         $temp = $temp + $this->box["temperature_calibration"];
         $humi = $humi + $this->box["humidity_calibration"];
-        $soil = $soil + $this->box["soil_calibration"];
+		
+		// if sensordata not between vaildty value, than set it to zero
+		if ($soil < "300" || $soil > "600") {
+			$soil = "0";
+		} else {
+			$soil = $soil + $this->box["soil_calibration"];
+		}
+        
         $data  = array(
             "temp"  => $temp,
             "humi"  => $humi,
