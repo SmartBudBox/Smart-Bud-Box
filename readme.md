@@ -14,3 +14,6 @@ Read the Manuals at /instrcutions/ for build the box and set up the Interface. W
 
 ## Wanna help?
 You can help me by translate the language files (comming soon) into your langauge or make a new web design =)
+
+## Short Video from the Interace with Planer
+https://streamable.com/1owan
