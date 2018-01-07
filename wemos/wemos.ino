@@ -165,9 +165,7 @@ void read_website_data(String url)
     if (line.startsWith("{")) {
       website_data += line;
     }
-    else if (x == 15) {
-      website_data += line;
-    }
+
     x++;
     
   }
