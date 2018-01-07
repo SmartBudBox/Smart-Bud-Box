@@ -1,37 +1,23 @@
 /*
    SETUP HERE
-
-
    wemos pinout: https://wiki.wemos.cc/products:d1:d1_mini
    wemos driver https://wiki.wemos.cc/downloads
-
    install wemos board to ide: https://learn.sparkfun.com/tutorials/esp8266-thing-hookup-guide/installing-the-esp8266-arduino-addon
-
-   install the 
+   install the
    DHT Sensor Libary
    ArduinoJSon
    Adafruit Unified Sensor
-   
-    from "Sktech - Include Libary - Manage Libarys"
 
+    from "Sktech - Include Libary - Manage Libarys"
 */
 //const long sensor_submission_interval = 10000; // interval for sensor data submission in ms: 60000 for 60 secound
 
-  Wire.begin();
-  writeI2CRegister8bit(0x20, 6);
-  delay(100);
-  dht1.begin();
 
 
 
-  // give soil sensor time to switch into sensor mode
-  int i = 0;
-  while(i < 10){ 
-    writeI2CRegister8bit(0x20, 3);
-    readI2CRegister16bit(0x20, 4);
-    i++;
-    delay(100);
-  }
+
+
+
 
 //*********************************************************************************
 //Hier sind die Credentials die vom Setup Tool kommen                *
@@ -53,8 +39,6 @@ int lf = 13;
 
 /*
    SETUP END
-
-
    setup finished, do not change any thing here if u dont know what u are doing
 */
 
@@ -81,8 +65,8 @@ int lf = 13;
 #define SOIL_SDA D2  // D2
 //************************************************************************
 
-
 DHT dht1(DHT_1, DHT22);
+
 
 int status_light = 0;
 int status_fan = 1024;
@@ -107,8 +91,10 @@ int index2;
 void setup()
 {
   analogWriteFreq(31300);
-  
-  Serial.begin(115200);       
+
+  Wire.begin();
+
+  Serial.begin(115200);
   Serial.println("SBB Controller gestartet");
   EEPROM.begin(512);
 
@@ -117,69 +103,85 @@ void setup()
   pinMode(PUMPE, OUTPUT);
   digitalWrite(LICHT, HIGH);
   digitalWrite(PUMPE, HIGH);
- 
-//************************************************************************
-//Laden der Credentials mit 20 Sekunden WarteZeit
-//Falls die Credentials über das Setup geändert werden sollen
-//************************************************************************
-memset(incomingBytes, 0, sizeof(incomingBytes));
-Serial.println("Warte auf Credentials Change");
-int counter = 0;
-for (int counter = 0; counter < (20); ++counter)
-{
-
- if (Serial.available() > 0) {
-    
-    // read the incoming byte:
-    //incomingByte = Serial.read();
-    Serial.readBytesUntil(lf, incomingBytes, 80);
   
-    // say what you received in ASCII
-    //Serial.print("I received: ");
-    Serial.println(incomingBytes);
-    CheckData(incomingBytes);
-    memset(incomingBytes, 0, sizeof(incomingBytes));
-    
+
+  // give soil sensor time to switch into sensor mode
+  int i = 0;
+  while (i < 10) {
+    writeI2CRegister8bit(0x20, 3);
+    readI2CRegister16bit(0x20, 4);
+    i++;
+    delay(100);
+  }
+
+  writeI2CRegister8bit(0x20, 6);
+  delay(100);
+  
+  
+  dht1.begin();
+  
+  //************************************************************************
+  //Laden der Credentials mit 20 Sekunden WarteZeit
+  //Falls die Credentials über das Setup geändert werden sollen
+  //************************************************************************
+  memset(incomingBytes, 0, sizeof(incomingBytes));
+  Serial.println("Warte auf Credentials Change");
+  int counter = 0;
+  for (int counter = 0; counter < (20); ++counter)
+  {
+
+    if (Serial.available() > 0) {
+
+      // read the incoming byte:
+      //incomingByte = Serial.read();
+      Serial.readBytesUntil(lf, incomingBytes, 80);
+
+      // say what you received in ASCII
+      //Serial.print("I received: ");
+      Serial.println(incomingBytes);
+      CheckData(incomingBytes);
+      memset(incomingBytes, 0, sizeof(incomingBytes));
+
     }
-delay(1000);
-}
-//************************************************************************
-CredentialsOK = 0;
-sensor_submission_interval = GETsensor_submission_interval();
+    delay(1000);
+  }
+  //************************************************************************
+  CredentialsOK = 0;
+  sensor_submission_interval = GETsensor_submission_interval();
 
 
-//
-////WIEDER LÖSCHEN ODER DEAKTIVIEREN
-//ClearEEPROM();                 //*
+  //
+  ////WIEDER LÖSCHEN ODER DEAKTIVIEREN
+  //ClearEEPROM();                 //*
 
-memset(incomingBytes, 0, sizeof(incomingBytes));
-//--------------------------------
- while (CredentialsOK != 1) 
- {
+  memset(incomingBytes, 0, sizeof(incomingBytes));
+  //--------------------------------
+  while (CredentialsOK != 1)
+  {
     delay(500);
     //Serial.println("Warte auf Daten");
     //Serial.println(CredentialsOK);
 
 
-//Hat so la la Funktioniert ----------------------------------------------
-  if (Serial.available() > 0) {
-    
-    // read the incoming byte:
-    //incomingByte = Serial.read();
-    Serial.readBytesUntil(lf, incomingBytes, 80);
-  
-    // say what you received in ASCII
-    //Serial.print("I received: ");
-    Serial.println(incomingBytes);
-    CheckData(incomingBytes);
-    memset(incomingBytes, 0, sizeof(incomingBytes));
-    
+    //Hat so la la Funktioniert ----------------------------------------------
+    if (Serial.available() > 0) {
+
+      // read the incoming byte:
+      //incomingByte = Serial.read();
+      Serial.readBytesUntil(lf, incomingBytes, 80);
+
+      // say what you received in ASCII
+      //Serial.print("I received: ");
+      Serial.println(incomingBytes);
+      CheckData(incomingBytes);
+      memset(incomingBytes, 0, sizeof(incomingBytes));
+
     }
-//Hat so la la Funktioniert ----------------------------------------------
+    //Hat so la la Funktioniert ----------------------------------------------
 
 
-  
- }
+
+  }
 
 
   ssid = GETssid();
@@ -189,9 +191,9 @@ memset(incomingBytes, 0, sizeof(incomingBytes));
   host_url = GEThost_url();
   api_password = GETapi_password();
   sensor_submission_interval = GETsensor_submission_interval();
- 
-  
-   
+
+
+
   digitalWrite(BUILTIN_LED, HIGH);
   Serial.println("connecting to wifi ap");
 
@@ -268,7 +270,7 @@ void read_website_data(String url)
   int x = 0;
   while (client.available()) {
     String line = client.readStringUntil('\r');
-    
+
     line.trim();
 
     if (line.startsWith("{")) {
@@ -278,7 +280,7 @@ void read_website_data(String url)
       website_data += line;
     }
     x++;
-    
+
   }
 
   Serial.print("parsed content: ");
@@ -297,10 +299,10 @@ void loop()
   // read sensordata and submit to api action: sensordata if interval reached
   unsigned long currentMillis = millis();
   if (currentMillis - sensor_submission_last >= sensor_submission_interval.toInt()) {
-      digitalWrite(BUILTIN_LED, LOW);
-      delay(500);
-      digitalWrite(BUILTIN_LED, HIGH);
-    int soil = readI2CRegister16bit(0x20, 0);    
+    digitalWrite(BUILTIN_LED, LOW);
+    delay(500);
+    digitalWrite(BUILTIN_LED, HIGH);
+    int soil = readI2CRegister16bit(0x20, 0);
     read_website_data("sensordata&temp=" + String(dht1.readTemperature()) + "&humi=" + String(dht1.readHumidity()) + "&soil=" + soil);
     sensor_submission_last = currentMillis;
   }
@@ -420,7 +422,7 @@ String GETssid()
   //Serial.print("SSID: ");
   ssid = esid;
   Serial.println("SSID:" + ssid);
-  return ssid;  
+  return ssid;
 }
 //**********************************************************************************************
 String GETpass()
@@ -445,7 +447,7 @@ String GETpass()
 //**********************************************************************************************
 String GEThost()
 {
-  //Lese auf dem EEPROM 
+  //Lese auf dem EEPROM
   int iMax;
   //HOST Lï¿½nge Speicher PLatz 3
   iMax = EEPROM.read(3);
@@ -467,7 +469,7 @@ String GEThost()
 //**********************************************************************************************
 String GEThttpPort()
 {
-  //Lese auf dem EEPROM 
+  //Lese auf dem EEPROM
   int iMax;
   //HOST Lï¿½nge Speicher PLatz 4
   iMax = EEPROM.read(4);
@@ -489,7 +491,7 @@ String GEThttpPort()
 //**********************************************************************************************
 String GEThost_url()
 {
-  //Lese auf dem EEPROM 
+  //Lese auf dem EEPROM
   int iMax;
   //HOST Lï¿½nge Speicher PLatz 5
   iMax = EEPROM.read(5);
@@ -507,12 +509,12 @@ String GEThost_url()
   host_url = string;
   Serial.println(host_url);
   return host_url;
-  
+
 }
 //**********************************************************************************************
 String GETapi_password()
 {
-  //Lese auf dem EEPROM 
+  //Lese auf dem EEPROM
   int iMax;
   //API Lï¿½nge Speicher PLatz 6
   iMax = EEPROM.read(6);
@@ -534,7 +536,7 @@ String GETapi_password()
 //**********************************************************************************************
 String GETsensor_submission_interval()
 {
-  //Lese auf dem EEPROM 
+  //Lese auf dem EEPROM
   int iMax;
   //SEN Lï¿½nge Speicher PLatz 7
   iMax = EEPROM.read(7);
@@ -594,10 +596,10 @@ void CheckData(String incoming) {
     //Entleere
     serWLAN_SSID = "";
 
-     Blinken();
+    Blinken();
   }
   //=======================================================
-  
+
 
 
   //=======================================================
@@ -617,11 +619,11 @@ void CheckData(String incoming) {
     }
     EEPROM.write(2, serPassword.length());
     EEPROM.commit();
-    //Entleere 
+    //Entleere
     serPassword = "";
 
     Blinken();
-    
+
   }
   //=======================================================
 
@@ -645,9 +647,9 @@ void CheckData(String incoming) {
     //Speicherplatz Lï¿½nge 3
     EEPROM.write(3, serHOST.length());
     EEPROM.commit();
-    //Entleere 
+    //Entleere
     serHOST = "";
-     Blinken();
+    Blinken();
   }
   //=======================================================
 
@@ -674,7 +676,7 @@ void CheckData(String incoming) {
 
     //Entleere
     serHTTPPort = "";
-     Blinken();
+    Blinken();
   }
   //=======================================================
 
@@ -699,9 +701,9 @@ void CheckData(String incoming) {
     EEPROM.write(5, serURL.length());
     EEPROM.commit();
 
-    //Entleere 
+    //Entleere
     serURL = "";
-     Blinken();
+    Blinken();
   }
   //=======================================================
 
@@ -726,9 +728,9 @@ void CheckData(String incoming) {
     EEPROM.write(6, serAPI.length());
     EEPROM.commit();
 
-    //Entleere 
+    //Entleere
     serAPI = "";
-     Blinken();
+    Blinken();
   }
   //=======================================================
 
@@ -754,9 +756,9 @@ void CheckData(String incoming) {
     EEPROM.commit();
     CredentialsOK = 1;
 
-    //Entleere 
+    //Entleere
     serSen = "";
-     Blinken();
+    Blinken();
   }
   //=======================================================
 
@@ -840,22 +842,20 @@ void CheckData(String incoming) {
 }
 
 void Blinken() {
-     delay(200);
-     digitalWrite(BUILTIN_LED, LOW);
+  delay(200);
+  digitalWrite(BUILTIN_LED, LOW);
 
-    
-     delay(200);
-     digitalWrite(BUILTIN_LED, HIGH);
 
-    
-     delay(200);
-     digitalWrite(BUILTIN_LED, LOW);
+  delay(200);
+  digitalWrite(BUILTIN_LED, HIGH);
 
-     delay(200);
-     digitalWrite(BUILTIN_LED, HIGH);
 
-      delay(200);
-     digitalWrite(BUILTIN_LED, LOW);
+  delay(200);
+  digitalWrite(BUILTIN_LED, LOW);
+
+  delay(200);
+  digitalWrite(BUILTIN_LED, HIGH);
+
+  delay(200);
+  digitalWrite(BUILTIN_LED, LOW);
 }
-
-
